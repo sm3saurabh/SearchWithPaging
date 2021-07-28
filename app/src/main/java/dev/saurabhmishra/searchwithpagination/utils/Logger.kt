@@ -6,6 +6,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 
+// Inspired from timber, but changed to suit my use-case
 object Logger {
 
     private const val MAX_TAG_LENGTH = 23
