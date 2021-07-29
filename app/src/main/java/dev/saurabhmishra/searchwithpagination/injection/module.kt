@@ -8,6 +8,9 @@ import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSourc
 import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSourceImpl
 import dev.saurabhmishra.searchwithpagination.sources.network.api.Api
 import dev.saurabhmishra.searchwithpagination.sources.network.helper.RetrofitHelper
+import dev.saurabhmishra.searchwithpagination.ui.home.HomeScreenViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.scope.get
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -18,7 +21,9 @@ val appModule = module {
     factory { SearchNetworkSourceImpl() } bind SearchNetworkSource::class
 }
 
-val viewModelModule = module {  }
+val viewModelModule = module {
+    viewModel{ HomeScreenViewModel(get()) }
+}
 
 val networkModule = module {
     single { RetrofitHelper.createRetrofit() }

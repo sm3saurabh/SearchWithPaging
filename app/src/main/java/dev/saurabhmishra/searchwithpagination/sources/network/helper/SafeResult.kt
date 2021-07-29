@@ -34,6 +34,6 @@ suspend fun <T> safeApiCall(executionContext: CoroutineContext, call: suspend ()
     }
 }
 
-class ApiException(val code: Int, private val msg: String): Exception(message = msg)
+class ApiException(val code: Int, private val msg: String): Exception(msg)
 
 class NoInternetException: Exception("No internet")
