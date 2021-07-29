@@ -12,14 +12,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.saurabhmishra.searchwithpagination.R
 import dev.saurabhmishra.searchwithpagination.ui.theme.SearchWithPaginationTheme
+import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun HomeScreen() {
   val viewModel = getViewModel<HomeScreenViewModel>()
-  val textToShow by viewModel.searchQuery.collectAsState()
+  val currentSearchQuery by SearchQueryPublisher.searchQuery.collectAsState()
 
-  HomeScreenContent(textToShow = textToShow, inputChanged = { searchQuery ->
+  HomeScreenContent(textToShow = currentSearchQuery, inputChanged = { searchQuery ->
     viewModel.onEvent(HomeScreenEvent.SearchQuery(searchQuery))
   })
 }
