@@ -1,39 +1,40 @@
 package dev.saurabhmishra.searchwithpagination.ui.home
 
-import android.view.View
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.RemoteMediator
-import androidx.paging.compose.collectAsLazyPagingItems
-import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
-import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSource
-import dev.saurabhmishra.searchwithpagination.sources.network.api.Api
+import dev.saurabhmishra.searchwithpagination.base.BaseViewModel
+import dev.saurabhmishra.searchwithpagination.mediator.SearchRemoteMediator
+import dev.saurabhmishra.searchwithpagination.sources.network.models.PhotosSearchResponse
 import dev.saurabhmishra.searchwithpagination.utils.Logger
 import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
-import org.koin.androidx.compose.getKoin
-import org.koin.core.context.KoinContext
-import org.koin.java.KoinJavaComponent.inject
 
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalPagingApi::class)
 class HomeScreenViewModel(
-  private val searchNetworkSource: SearchNetworkSource
-) : ViewModel() {
+  searchRemoteMediator: SearchRemoteMediator
+) : BaseViewModel() {
 
-  val abc by inject<Api>(Api::class.java)
 
   init {
-    SearchQueryPublisher.searchQuery.debounce(500L)
-      .onEach { query ->
-        performSearchQueryApiCall(query)
-      }.catch { throwable ->
-        Logger.error("Error in search query processing", throwable)
-      }.launchIn(viewModelScope)
+    initializeSearchQueryFlow()
   }
+
+  private val pager: Pager<Int, PhotosSearchResponse> = Pager(
+    config = PagingConfig(5),
+    remoteMediator = searchRemoteMediator
+  ) {
+    TODO()
+  }
+
+  val photosResponseFlow = pager.flow
+
+  val viewState: StateFlow<HomeScreenViewState> = MutableStateFlow(HomeScreenViewState.Idle)
 
   fun onEvent(event: HomeScreenEvent) {
     when (event) {
@@ -45,17 +46,13 @@ class HomeScreenViewModel(
     SearchQueryPublisher.setNewQuery(query)
   }
 
-  @OptIn(ExperimentalPagingApi::class)
-  private suspend fun performSearchQueryApiCall(query: String) {
-
-    val pager = Pager(
-      config = PagingConfig(10),
-      remoteMediator = SearchNetworkSource(abc)
-    ) {
-      TODO()
-    }
-
-    pager.flow.collectAsLazyPagingItems()
+  private fun initializeSearchQueryFlow() {
+    SearchQueryPublisher.searchQuery.debounce(500L)
+      .onEach {
+        viewState.setValue(HomeScreenViewState.Searching)
+      }.catch { throwable ->
+        Logger.error("Error in search query processing", throwable)
+      }.launchIn(viewModelScope)
   }
 
 
@@ -64,4 +61,9 @@ class HomeScreenViewModel(
 
 sealed class HomeScreenEvent {
   class SearchQuery(val query: String): HomeScreenEvent()
+}
+
+sealed class HomeScreenViewState {
+  object Idle: HomeScreenViewState()
+  object Searching: HomeScreenViewState()
 }
