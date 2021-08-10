@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import dev.saurabhmishra.searchwithpagination.base.BaseViewModel
 import dev.saurabhmishra.searchwithpagination.mediator.SearchRemoteMediator
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
@@ -12,6 +13,7 @@ import dev.saurabhmishra.searchwithpagination.utils.Logger
 import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @FlowPreview
 class SearchListViewModel(
@@ -32,18 +34,25 @@ class SearchListViewModel(
         searchRepo.getPhotosForSearchQuery(SearchQueryPublisher.getCurrentQuery())
     }
 
-    val photosResponseFlow = pager.flow
+    val photosResponseFlow = pager.flow.cachedIn(viewModelScope)
 
     val viewState: StateFlow<SearchListScreenViewState> = MutableStateFlow(SearchListScreenViewState.Idle)
 
     fun onEvent(event: SearchListScreenEvent) {
         when (event) {
             is SearchListScreenEvent.SearchQuery -> searchQueryRequested(event.query)
+            is SearchListScreenEvent.ToggleFavourite -> toggleFavouriteRequested(event.photoEntity)
         }
     }
 
     private fun searchQueryRequested(query: String) {
         SearchQueryPublisher.setNewQuery(query)
+    }
+
+    private fun toggleFavouriteRequested(photoEntity: PhotoEntity) {
+        viewModelScope.launch {
+            searchRepo.togglePhotoAsFavourite(photoEntity)
+        }
     }
 
     private fun initializeSearchQueryFlow() {
@@ -60,6 +69,7 @@ class SearchListViewModel(
 
 sealed class SearchListScreenEvent {
     class SearchQuery(val query: String): SearchListScreenEvent()
+    class ToggleFavourite(val photoEntity: PhotoEntity): SearchListScreenEvent()
 }
 
 sealed class SearchListScreenViewState {

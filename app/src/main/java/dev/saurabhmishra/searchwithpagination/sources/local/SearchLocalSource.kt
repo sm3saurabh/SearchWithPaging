@@ -18,6 +18,7 @@ interface SearchLocalSource {
     suspend fun deleteEverything()
     suspend fun getPhotoPageByPhotoId(id: String): Int
     suspend fun savePhotoMetaData(photoPageMetadata: List<PhotoPageMetadata>): Boolean
+    suspend fun updatePhotoEntity(photo: PhotoEntity)
 }
 
 class SearchLocalSourceImpl(
@@ -56,6 +57,12 @@ class SearchLocalSourceImpl(
     override suspend fun savePhotoMetaData(photoPageMetadata: List<PhotoPageMetadata>): Boolean {
         return withContext(coroutineContextProvider.ioThread) {
             photoPageDao.insertPageMetaData(photoPageMetadata).size >= 0
+        }
+    }
+
+    override suspend fun updatePhotoEntity(photo: PhotoEntity) {
+        withContext(coroutineContextProvider.ioThread) {
+            photoDao.updatePhoto(photo)
         }
     }
 

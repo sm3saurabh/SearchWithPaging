@@ -25,6 +25,7 @@ interface SearchRepo {
     fun getFavoritePhotos(): Flow<PhotoEntity>
     fun getPhotosForSearchQuery(query: String): PagingSource<Int, PhotoEntity>
     suspend fun getPageNumberByPhotoId(id: String): Int
+    suspend fun togglePhotoAsFavourite(photoEntity: PhotoEntity)
 }
 
 class SearchRepoImpl(
@@ -58,6 +59,10 @@ class SearchRepoImpl(
 
     override suspend fun getPageNumberByPhotoId(id: String): Int {
         return searchLocalSource.getPhotoPageByPhotoId(id)
+    }
+
+    override suspend fun togglePhotoAsFavourite(photoEntity: PhotoEntity) {
+        searchLocalSource.updatePhotoEntity(photoEntity.copy(isFavorite = !photoEntity.isFavorite))
     }
 
     private suspend fun handlePhotoLoadSuccess(
