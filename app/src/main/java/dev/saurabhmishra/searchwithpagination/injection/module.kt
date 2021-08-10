@@ -2,6 +2,7 @@ package dev.saurabhmishra.searchwithpagination.injection
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import dev.saurabhmishra.searchwithpagination.mediator.SearchRemoteMediator
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepoImpl
 import dev.saurabhmishra.searchwithpagination.sources.local.SearchLocalSource
@@ -41,6 +42,8 @@ val networkModule = module {
         val retrofit = get<Retrofit>()
         retrofit.create(Api::class.java)
     } bind Api::class
+
+    single { SearchRemoteMediator(get()) } bind SearchRemoteMediator::class
 }
 
 val databaseModule = module {
