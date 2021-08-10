@@ -28,7 +28,7 @@ class SearchLocalSourceImpl(
 
     override suspend fun savePhotos(photos: List<PhotoEntity>): Boolean {
         return withContext(coroutineContextProvider.ioThread) {
-            photoDao.insertPhotos(photos) >= 0
+            photoDao.insertPhotos(photos).size >= 0
         }
     }
 
@@ -55,7 +55,7 @@ class SearchLocalSourceImpl(
 
     override suspend fun savePhotoMetaData(photoPageMetadata: List<PhotoPageMetadata>): Boolean {
         return withContext(coroutineContextProvider.ioThread) {
-            photoPageDao.insertPageMetaData(photoPageMetadata) >= 0
+            photoPageDao.insertPageMetaData(photoPageMetadata).size >= 0
         }
     }
 

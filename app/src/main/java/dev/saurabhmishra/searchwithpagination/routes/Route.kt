@@ -7,7 +7,6 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Route(val name: String, val icon: ImageVector) {
-    object Home: Route("Home", Icons.Outlined.Home)
     object Search: Route("Search", Icons.Outlined.Search)
     object Favourite: Route("Favourite", Icons.Outlined.Favorite)
 }

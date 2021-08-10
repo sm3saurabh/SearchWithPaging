@@ -65,4 +65,4 @@ class SearchRemoteMediator(
 
 }
 
-class SearchRefreshFailedException: Exception(message = "Search failed in either loading or saving in database")
+class SearchRefreshFailedException: Exception("Search failed in either loading or saving in database")

@@ -10,11 +10,11 @@ interface PhotoPageDao {
     suspend fun getMetaDataById(id: String): PhotoPageMetadata?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPageMetaData(metaData: List<PhotoPageMetadata>): Int
+    suspend fun insertPageMetaData(metaData: List<PhotoPageMetadata>): List<Long>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updatePageMetaData(metaData: PhotoPageMetadata): Long
+    suspend fun updatePageMetaData(metaData: PhotoPageMetadata)
 
     @Query("DELETE FROM PhotoPageMetadata")
-    suspend fun deleteEverything(): Int
+    suspend fun deleteEverything()
 }

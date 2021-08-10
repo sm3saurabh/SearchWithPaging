@@ -14,10 +14,10 @@ interface PhotoDao {
     fun getFavoritePhotos(): Flow<PhotoEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPhotos(photoEntity: List<PhotoEntity>): Int
+    suspend fun insertPhotos(photoEntity: List<PhotoEntity>): List<Long>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updatePhoto(photoEntity: PhotoEntity): Long
+    suspend fun updatePhoto(photoEntity: PhotoEntity)
 
     @Query("DELETE FROM PhotoEntity")
     suspend fun deleteEverything(): Int
