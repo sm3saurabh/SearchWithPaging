@@ -1,5 +1,6 @@
 package dev.saurabhmishra.searchwithpagination.repo
 
+import androidx.paging.PagingSource
 import dev.saurabhmishra.searchwithpagination.mappers.toPhotoEntity
 import dev.saurabhmishra.searchwithpagination.sources.local.SearchLocalSource
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
@@ -22,7 +23,7 @@ interface SearchRepo {
     suspend fun loadAndSavePhotos(searchQuery: String, pageNumber: Int): SafeResult<SearchLoadResult>
     suspend fun deleteEverything()
     fun getFavoritePhotos(): Flow<PhotoEntity>
-    fun getPhotosForSearchQuery(query: String): Flow<PhotoEntity>
+    fun getPhotosForSearchQuery(query: String): PagingSource<Int, PhotoEntity>
     suspend fun getPageNumberByPhotoId(id: String): Int
 }
 
@@ -51,7 +52,7 @@ class SearchRepoImpl(
         return searchLocalSource.getFavoritePhotos()
     }
 
-    override fun getPhotosForSearchQuery(query: String): Flow<PhotoEntity> {
+    override fun getPhotosForSearchQuery(query: String): PagingSource<Int, PhotoEntity> {
         return searchLocalSource.getPhotosForSearchQuery(query)
     }
 

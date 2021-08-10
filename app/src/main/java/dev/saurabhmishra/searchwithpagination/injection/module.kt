@@ -28,7 +28,7 @@ val coreModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { HomeScreenViewModel(get()) }
+    viewModel { HomeScreenViewModel(get(), get()) }
 }
 
 val networkModule = module {
@@ -44,6 +44,7 @@ val networkModule = module {
     } bind Api::class
 
     single { SearchRemoteMediator(get()) } bind SearchRemoteMediator::class
+
 }
 
 val databaseModule = module {

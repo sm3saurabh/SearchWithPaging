@@ -1,15 +1,13 @@
 package dev.saurabhmishra.searchwithpagination.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import dev.saurabhmishra.searchwithpagination.base.BaseViewModel
 import dev.saurabhmishra.searchwithpagination.mediator.SearchRemoteMediator
-import dev.saurabhmishra.searchwithpagination.sources.network.models.PhotosSearchResponse
+import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
+import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import dev.saurabhmishra.searchwithpagination.utils.Logger
 import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
 import kotlinx.coroutines.FlowPreview
@@ -17,7 +15,8 @@ import kotlinx.coroutines.flow.*
 
 @OptIn(FlowPreview::class, ExperimentalPagingApi::class)
 class HomeScreenViewModel(
-  searchRemoteMediator: SearchRemoteMediator
+  searchRemoteMediator: SearchRemoteMediator,
+  searchRepo: SearchRepo
 ) : BaseViewModel() {
 
 
@@ -25,11 +24,11 @@ class HomeScreenViewModel(
     initializeSearchQueryFlow()
   }
 
-  private val pager: Pager<Int, PhotosSearchResponse> = Pager(
+  private val pager: Pager<Int, PhotoEntity> = Pager(
     config = PagingConfig(5),
     remoteMediator = searchRemoteMediator
   ) {
-    TODO()
+    searchRepo.getPhotosForSearchQuery(SearchQueryPublisher.getCurrentQuery())
   }
 
   val photosResponseFlow = pager.flow
@@ -49,13 +48,11 @@ class HomeScreenViewModel(
   private fun initializeSearchQueryFlow() {
     SearchQueryPublisher.searchQuery.debounce(500L)
       .onEach {
-        viewState.setValue(HomeScreenViewState.Searching)
+        viewState.setValue(HomeScreenViewState.NewSearchQuery)
       }.catch { throwable ->
         Logger.error("Error in search query processing", throwable)
       }.launchIn(viewModelScope)
   }
-
-
 
 }
 
@@ -65,5 +62,5 @@ sealed class HomeScreenEvent {
 
 sealed class HomeScreenViewState {
   object Idle: HomeScreenViewState()
-  object Searching: HomeScreenViewState()
+  object NewSearchQuery: HomeScreenViewState()
 }

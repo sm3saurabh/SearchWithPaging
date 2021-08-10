@@ -1,5 +1,6 @@
 package dev.saurabhmishra.searchwithpagination.sources.local
 
+import androidx.paging.PagingSource
 import dev.saurabhmishra.searchwithpagination.sources.local.dao.PhotoDao
 import dev.saurabhmishra.searchwithpagination.sources.local.dao.PhotoPageDao
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
@@ -12,7 +13,7 @@ import kotlinx.coroutines.withContext
 
 interface SearchLocalSource {
     suspend fun savePhotos(photos: List<PhotoEntity>): Boolean
-    fun getPhotosForSearchQuery(query: String): Flow<PhotoEntity>
+    fun getPhotosForSearchQuery(query: String): PagingSource<Int, PhotoEntity>
     fun getFavoritePhotos(): Flow<PhotoEntity>
     suspend fun deleteEverything()
     suspend fun getPhotoPageByPhotoId(id: String): Int
@@ -31,9 +32,8 @@ class SearchLocalSourceImpl(
         }
     }
 
-    override fun getPhotosForSearchQuery(query: String): Flow<PhotoEntity> {
+    override fun getPhotosForSearchQuery(query: String): PagingSource<Int, PhotoEntity> {
         return photoDao.getPhotosForSearch(query = query)
-            .flowOn(coroutineContextProvider.ioThread)
     }
 
     override fun getFavoritePhotos(): Flow<PhotoEntity> {

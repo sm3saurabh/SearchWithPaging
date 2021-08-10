@@ -1,5 +1,6 @@
 package dev.saurabhmishra.searchwithpagination.sources.local.dao
 
+import androidx.paging.PagingSource
 import androidx.room.*
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import kotlinx.coroutines.flow.Flow
@@ -7,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PhotoDao {
     @Query("SELECT * FROM PhotoEntity WHERE searchQuery like :query")
-    fun getPhotosForSearch(query: String): Flow<PhotoEntity>
+    fun getPhotosForSearch(query: String): PagingSource<Int, PhotoEntity>
 
     @Query("SELECT * FROM PhotoEntity WHERE isFavorite = 1")
     fun getFavoritePhotos(): Flow<PhotoEntity>
