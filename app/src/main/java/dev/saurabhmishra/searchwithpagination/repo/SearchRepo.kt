@@ -10,7 +10,6 @@ import dev.saurabhmishra.searchwithpagination.sources.network.helper.SafeResult
 import dev.saurabhmishra.searchwithpagination.sources.network.models.PhotosSearchResponse
 import dev.saurabhmishra.searchwithpagination.utils.AppConstants
 import dev.saurabhmishra.searchwithpagination.utils.Logger
-import kotlinx.coroutines.flow.Flow
 import java.lang.Exception
 
 
@@ -22,7 +21,7 @@ data class SearchLoadResult(
 interface SearchRepo {
     suspend fun loadAndSavePhotos(searchQuery: String, pageNumber: Int): SafeResult<SearchLoadResult>
     suspend fun deleteEverything()
-    fun getFavoritePhotos(): Flow<PhotoEntity>
+    fun getFavoritePhotos(): PagingSource<Int, PhotoEntity>
     fun getPhotosForSearchQuery(query: String): PagingSource<Int, PhotoEntity>
     suspend fun getPageNumberByPhotoId(id: String): Int
     suspend fun togglePhotoAsFavourite(photoEntity: PhotoEntity)
@@ -49,7 +48,7 @@ class SearchRepoImpl(
         searchLocalSource.deleteEverything()
     }
 
-    override fun getFavoritePhotos(): Flow<PhotoEntity> {
+    override fun getFavoritePhotos(): PagingSource<Int, PhotoEntity> {
         return searchLocalSource.getFavoritePhotos()
     }
 

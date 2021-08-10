@@ -27,6 +27,7 @@ import coil.transform.RoundedCornersTransformation
 import dev.saurabhmishra.searchwithpagination.mappers.getPhotoUrl
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import dev.saurabhmishra.searchwithpagination.ui.theme.SearchWithPaginationTheme
+import dev.saurabhmishra.searchwithpagination.ui.widgets.ImageList
 import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
 import kotlinx.coroutines.flow.flow
 import org.koin.androidx.compose.getViewModel
@@ -41,12 +42,16 @@ fun SearchListScreen() {
     val photosPagingItems = viewModel.photosResponseFlow.collectAsLazyPagingItems()
     val viewState by viewModel.viewState.collectAsState()
 
+    if (viewState is SearchListScreenViewState.NewSearchQuery) {
+        photosPagingItems.refresh()
+    }
+
     Column(modifier = Modifier.padding(12.dp)) {
         SearchBar(textToShow = currentSearchQuery, inputChanged = { query ->
             viewModel.onEvent(SearchListScreenEvent.SearchQuery(query))
         })
         Spacer(modifier = Modifier.height(12.dp))
-        ImageList(photosPagingItems = photosPagingItems, viewState = viewState, onLikeIconClick = { photo ->
+        ImageList(photosPagingItems = photosPagingItems, onLikeIconClick = { photo ->
             viewModel.onEvent(SearchListScreenEvent.ToggleFavourite(photo))
         })
     }
@@ -69,83 +74,12 @@ private fun SearchBar(
     )
 }
 
-@Composable
-private fun ImageList(
-    photosPagingItems: LazyPagingItems<PhotoEntity>,
-    viewState: SearchListScreenViewState,
-    onLikeIconClick: (PhotoEntity) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        items(photosPagingItems) { photo ->
-            photo?.let {
-                PhotoWithLikeButton(photo, onLikeIconClick)
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-        }
-    }
 
-    if (viewState is SearchListScreenViewState.NewSearchQuery) {
-        photosPagingItems.refresh()
-    }
-}
-
-@Composable
-private fun PhotoWithLikeButton(photo: PhotoEntity, onLikeIconClick: (PhotoEntity) -> Unit) {
-    // A height is compulsory to be provided, without this, rememberImagePainter
-    // does not work.
-    // For reference -> https://coil-kt.github.io/coil/compose/
-    Box {
-        val roundedCorner = with(LocalDensity.current) { 4.dp.toPx() }
-        Image(
-            painter = rememberImagePainter(
-                data = photo.getPhotoUrl(),
-                builder = {
-                    transformations(RoundedCornersTransformation(roundedCorner))
-                }
-            ),
-            contentDescription = photo.title,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        )
-
-        IconButton(
-            onClick = { onLikeIconClick.invoke(photo) },
-            modifier = Modifier.align(Alignment.TopEnd)
-                .padding(top = 8.dp, end = 8.dp)
-        ) {
-            Icon(getLikeIcon(photo), contentDescription = "Like button")
-        }
-    }
-}
-
-private fun getLikeIcon(photo: PhotoEntity): ImageVector {
-    return if (photo.isFavorite) {
-        Icons.Filled.Favorite
-    } else {
-        Icons.Filled.ThumbUp
-    }
-}
 
 @Preview
 @Composable
 fun SearchBarPreview() {
     SearchWithPaginationTheme {
         SearchBar(textToShow = "Whoa", inputChanged = {})
-    }
-}
-
-@Preview
-@Composable
-fun ImageListPreview() {
-    val flowing = flow<PagingData<PhotoEntity>> {}
-    val photoPagingItems = flowing.collectAsLazyPagingItems()
-
-    SearchWithPaginationTheme {
-        ImageList(photosPagingItems = photoPagingItems, viewState = SearchListScreenViewState.Idle, onLikeIconClick = {})
     }
 }

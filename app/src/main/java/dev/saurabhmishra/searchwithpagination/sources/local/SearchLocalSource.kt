@@ -7,14 +7,13 @@ import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoPageMetadata
 import dev.saurabhmishra.searchwithpagination.utils.AppConstants
 import dev.saurabhmishra.searchwithpagination.utils.CoroutineContextProvider
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 interface SearchLocalSource {
     suspend fun savePhotos(photos: List<PhotoEntity>): Boolean
     fun getPhotosForSearchQuery(query: String): PagingSource<Int, PhotoEntity>
-    fun getFavoritePhotos(): Flow<PhotoEntity>
+    fun getFavoritePhotos(): PagingSource<Int, PhotoEntity>
     suspend fun deleteEverything()
     suspend fun getPhotoPageByPhotoId(id: String): Int
     suspend fun savePhotoMetaData(photoPageMetadata: List<PhotoPageMetadata>): Boolean
@@ -37,9 +36,8 @@ class SearchLocalSourceImpl(
         return photoDao.getPhotosForSearch(query = query)
     }
 
-    override fun getFavoritePhotos(): Flow<PhotoEntity> {
+    override fun getFavoritePhotos(): PagingSource<Int, PhotoEntity> {
         return photoDao.getFavoritePhotos()
-            .flowOn(coroutineContextProvider.ioThread)
     }
 
     override suspend fun deleteEverything() {

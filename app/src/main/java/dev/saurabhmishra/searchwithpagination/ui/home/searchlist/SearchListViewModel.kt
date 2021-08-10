@@ -9,6 +9,7 @@ import dev.saurabhmishra.searchwithpagination.base.BaseViewModel
 import dev.saurabhmishra.searchwithpagination.mediator.SearchRemoteMediator
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
+import dev.saurabhmishra.searchwithpagination.utils.AppConstants
 import dev.saurabhmishra.searchwithpagination.utils.Logger
 import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
 import kotlinx.coroutines.FlowPreview
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 
 @FlowPreview
 class SearchListViewModel(
-    private val searchRemoteMediator: SearchRemoteMediator,
+    searchRemoteMediator: SearchRemoteMediator,
     private val searchRepo: SearchRepo
 ): BaseViewModel() {
 
@@ -28,7 +29,7 @@ class SearchListViewModel(
 
     @OptIn(ExperimentalPagingApi::class)
     private val pager: Pager<Int, PhotoEntity> = Pager(
-        config = PagingConfig(5),
+        config = PagingConfig(AppConstants.OBJECTS_PER_PAGE),
         remoteMediator = searchRemoteMediator
     ) {
         searchRepo.getPhotosForSearchQuery(SearchQueryPublisher.getCurrentQuery())

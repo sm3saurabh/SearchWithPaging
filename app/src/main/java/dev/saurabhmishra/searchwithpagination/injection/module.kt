@@ -15,6 +15,7 @@ import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSourc
 import dev.saurabhmishra.searchwithpagination.sources.network.api.Api
 import dev.saurabhmishra.searchwithpagination.sources.network.helper.RetrofitHelper
 import dev.saurabhmishra.searchwithpagination.sources.network.interceptor.FlickrInterceptor
+import dev.saurabhmishra.searchwithpagination.ui.home.favourite.FavouriteViewModel
 import dev.saurabhmishra.searchwithpagination.ui.home.searchlist.SearchListViewModel
 import dev.saurabhmishra.searchwithpagination.utils.CoroutineContextProvider
 import dev.saurabhmishra.searchwithpagination.utils.DefaultCoroutineContextProvider
@@ -30,6 +31,7 @@ val coreModule = module {
 
 val viewModelModule = module {
     viewModel { SearchListViewModel(get(), get()) }
+    viewModel { FavouriteViewModel(get()) }
 }
 
 val networkModule = module {
