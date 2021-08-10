@@ -1,7 +1,6 @@
 package dev.saurabhmishra.searchwithpagination.injection
 
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import dev.saurabhmishra.searchwithpagination.mediator.SearchRemoteMediator
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepoImpl
@@ -60,7 +59,7 @@ val databaseModule = module {
 }
 
 val localSourceModule = module {
-    factory { SearchLocalSourceImpl() } bind SearchLocalSource::class
+    factory { SearchLocalSourceImpl(get(), get()) } bind SearchLocalSource::class
 }
 
 val networkSourceModule = module {
