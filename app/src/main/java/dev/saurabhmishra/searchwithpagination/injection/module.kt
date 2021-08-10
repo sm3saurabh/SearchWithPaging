@@ -7,6 +7,7 @@ import dev.saurabhmishra.searchwithpagination.repo.SearchRepoImpl
 import dev.saurabhmishra.searchwithpagination.sources.local.SearchLocalSource
 import dev.saurabhmishra.searchwithpagination.sources.local.SearchLocalSourceImpl
 import dev.saurabhmishra.searchwithpagination.sources.local.dao.PhotoDao
+import dev.saurabhmishra.searchwithpagination.sources.local.dao.PhotoPageDao
 import dev.saurabhmishra.searchwithpagination.sources.local.database.SearchWithPaginationDB
 import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSource
 import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSourceImpl
@@ -56,10 +57,15 @@ val databaseModule = module {
         val db = get<SearchWithPaginationDB>()
         db.photoDao()
     } bind PhotoDao::class
+
+    single {
+        val db = get<SearchWithPaginationDB>()
+        db.photoPageDao()
+    } bind PhotoPageDao::class
 }
 
 val localSourceModule = module {
-    factory { SearchLocalSourceImpl(get(), get()) } bind SearchLocalSource::class
+    factory { SearchLocalSourceImpl(get(), get(), get()) } bind SearchLocalSource::class
 }
 
 val networkSourceModule = module {
