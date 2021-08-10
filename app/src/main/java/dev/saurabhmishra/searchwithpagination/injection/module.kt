@@ -1,9 +1,13 @@
 package dev.saurabhmishra.searchwithpagination.injection
 
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepoImpl
 import dev.saurabhmishra.searchwithpagination.sources.local.SearchLocalSource
 import dev.saurabhmishra.searchwithpagination.sources.local.SearchLocalSourceImpl
+import dev.saurabhmishra.searchwithpagination.sources.local.dao.PhotoDao
+import dev.saurabhmishra.searchwithpagination.sources.local.database.SearchWithPaginationDB
 import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSource
 import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSourceImpl
 import dev.saurabhmishra.searchwithpagination.sources.network.api.Api
@@ -12,6 +16,7 @@ import dev.saurabhmishra.searchwithpagination.sources.network.interceptor.Flickr
 import dev.saurabhmishra.searchwithpagination.ui.home.HomeScreenViewModel
 import dev.saurabhmishra.searchwithpagination.utils.CoroutineContextProvider
 import dev.saurabhmishra.searchwithpagination.utils.DefaultCoroutineContextProvider
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -38,6 +43,19 @@ val networkModule = module {
     } bind Api::class
 }
 
+val databaseModule = module {
+    single {
+        Room.databaseBuilder(androidContext(), SearchWithPaginationDB::class.java, androidContext().packageName)
+            .fallbackToDestructiveMigration()
+            .build()
+    } bind SearchWithPaginationDB::class
+
+    single {
+        val db = get<SearchWithPaginationDB>()
+        db.photoDao()
+    } bind PhotoDao::class
+}
+
 val localSourceModule = module {
     factory { SearchLocalSourceImpl() } bind SearchLocalSource::class
 }
@@ -54,6 +72,7 @@ val appWideModules = listOf(
     coreModule,
     viewModelModule,
     networkModule,
+    databaseModule,
     localSourceModule,
     networkSourceModule,
     repoModule
