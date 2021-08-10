@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
@@ -19,6 +20,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.rememberImagePainter
+import coil.transform.RoundedCornersTransformation
 import dev.saurabhmishra.searchwithpagination.mappers.getPhotoUrl
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import dev.saurabhmishra.searchwithpagination.ui.theme.SearchWithPaginationTheme
@@ -36,10 +38,11 @@ fun SearchListScreen() {
     val photosPagingItems = viewModel.photosResponseFlow.collectAsLazyPagingItems()
     val viewState by viewModel.viewState.collectAsState()
 
-    Column {
+    Column(modifier = Modifier.padding(12.dp)) {
         SearchBar(textToShow = currentSearchQuery, inputChanged = { query ->
             viewModel.onEvent(SearchListScreenEvent.SearchQuery(query))
         })
+        Spacer(modifier = Modifier.height(12.dp))
         ImageList(photosPagingItems = photosPagingItems, viewState = viewState)
     }
 }
@@ -75,9 +78,13 @@ private fun ImageList(
                 // A height is compulsory to be provided, without this, rememberImagePainter
                 // does not work.
                 // For reference -> https://coil-kt.github.io/coil/compose/
+                val roundedCorner = with(LocalDensity.current) { 4.dp.toPx() }
                 Image(
                     painter = rememberImagePainter(
-                        data = photo.getPhotoUrl()
+                        data = photo.getPhotoUrl(),
+                        builder = {
+                            transformations(RoundedCornersTransformation(roundedCorner))
+                        }
                     ),
                     contentDescription = photo.title,
                     contentScale = ContentScale.Crop,

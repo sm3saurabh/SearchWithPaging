@@ -1,7 +1,6 @@
 package dev.saurabhmishra.searchwithpagination.mediator
 
 
-import android.provider.MediaStore
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -12,7 +11,6 @@ import dev.saurabhmishra.searchwithpagination.sources.network.helper.SafeResult
 import dev.saurabhmishra.searchwithpagination.utils.AppConstants
 import dev.saurabhmishra.searchwithpagination.utils.Logger
 import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
-import java.lang.IllegalStateException
 
 
 @OptIn(ExperimentalPagingApi::class)
@@ -34,7 +32,7 @@ class SearchRemoteMediator(
         }
 
         val pageNumber = getPageNumberForCurrentEntity(entity)
-        return loadAndSavePhotos(pageNumber = pageNumber)
+        return loadAndSavePhotos(pageNumber = pageNumber + 1)
     }
 
     private suspend fun getPageNumberForCurrentEntity(entity: PhotoEntity?): Int {
