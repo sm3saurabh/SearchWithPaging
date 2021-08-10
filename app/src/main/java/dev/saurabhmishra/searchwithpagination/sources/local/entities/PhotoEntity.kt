@@ -1,10 +1,11 @@
 package dev.saurabhmishra.searchwithpagination.sources.local.entities
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 @Entity
 data class PhotoEntity(
-    val id: String,
+    @PrimaryKey val id: String,
     val owner: String,
     val secret: String,
     val server: String,
