@@ -81,7 +81,6 @@ private fun ImageList(
     ) {
         items(photosPagingItems) { photo ->
             photo?.let {
-
                 PhotoWithLikeButton(photo, onLikeIconClick)
                 Spacer(modifier = Modifier.height(12.dp))
             }

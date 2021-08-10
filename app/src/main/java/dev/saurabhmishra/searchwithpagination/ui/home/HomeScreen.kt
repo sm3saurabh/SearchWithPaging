@@ -1,8 +1,11 @@
 package dev.saurabhmishra.searchwithpagination.ui.home
 
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -27,8 +30,8 @@ fun HomeScreen() {
 
     Scaffold(
         bottomBar = { HomeBottomNavigation(bottomNavigationItems, navController) },
-        content = {
-            NavigableContent(navController)
+        content = { paddingValues ->
+            NavigableContent(navController, paddingValues)
         }
     )
 }
@@ -69,8 +72,15 @@ private fun HomeBottomNavigation(
 }
 
 @Composable
-private fun NavigableContent(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = Route.Search.name) {
+private fun NavigableContent(navController: NavHostController, paddingValues: PaddingValues) {
+    NavHost(
+        navController = navController,
+        startDestination = Route.Search.name,
+        modifier = Modifier.padding(
+            bottom = paddingValues.calculateBottomPadding(),
+            top = paddingValues.calculateTopPadding()
+        )
+    ) {
         composable(Route.Search.name) { SearchListScreen() }
         composable(Route.Favourite.name) { FavouriteScreen() }
     }
