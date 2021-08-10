@@ -7,7 +7,7 @@ import dev.saurabhmishra.searchwithpagination.sources.network.models.PhotosSearc
 import dev.saurabhmishra.searchwithpagination.utils.CoroutineContextProvider
 
 interface SearchNetworkSource {
-  suspend fun searchPhotosForTag(tag: String): SafeResult<PhotosSearchResponse>
+  suspend fun searchPhotosForTag(searchQuery: String, pageNumber: Int): SafeResult<PhotosSearchResponse>
 }
 
 class SearchNetworkSourceImpl(
@@ -15,9 +15,9 @@ class SearchNetworkSourceImpl(
   private val api: Api
 ): SearchNetworkSource {
 
-  override suspend fun searchPhotosForTag(tag: String): SafeResult<PhotosSearchResponse> {
+  override suspend fun searchPhotosForTag(searchQuery: String, pageNumber: Int): SafeResult<PhotosSearchResponse> {
     return safeApiCall(coroutineContextProvider.ioThread) {
-      api.searchPhotosWithTag()
+      api.searchPhotosWithTag(searchQuery, pageNumber)
     }
   }
 
