@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface Api {
 
-    @GET
+    @GET("rest/")
     suspend fun searchPhotosWithTag(
         @Query("tags") searchQuery: String,
         @Query("page") page: Int

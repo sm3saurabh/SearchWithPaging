@@ -10,8 +10,10 @@ import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import dev.saurabhmishra.searchwithpagination.utils.Logger
 import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 
+@FlowPreview
 class SearchListViewModel(
     private val searchRemoteMediator: SearchRemoteMediator,
     private val searchRepo: SearchRepo
@@ -46,8 +48,10 @@ class SearchListViewModel(
 
     private fun initializeSearchQueryFlow() {
         SearchQueryPublisher.searchQuery.debounce(500L)
-            .onEach {
-                viewState.setValue(SearchListScreenViewState.NewSearchQuery)
+            .onEach { query ->
+                if (query.isNotBlank()) {
+                    viewState.setValue(SearchListScreenViewState.NewSearchQuery)
+                }
             }.catch { throwable ->
                 Logger.error("Error in search query processing", throwable)
             }.launchIn(viewModelScope)

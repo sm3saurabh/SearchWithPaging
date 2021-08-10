@@ -29,7 +29,8 @@ class FlickrInterceptor : Interceptor {
     }
 
     private enum class DefaultParameters(val key: String, val value: String) {
-        Method("method", "flickr.photos.search"),
+        // method -> flickr.photos.search does not work, switching to getRecent instead
+        Method("method", "flickr.photos.getRecent"),
         ApiKey("api_key", "062a6c0c49e4de1d78497d13a7dbb360"),
         Format("format", "json"),
         NoJsonCallback("nojsoncallback", "1"),

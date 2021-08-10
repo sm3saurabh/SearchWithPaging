@@ -1,18 +1,21 @@
 package dev.saurabhmishra.searchwithpagination.sources.network.helper
 
+import com.squareup.moshi.Moshi
 import dev.saurabhmishra.searchwithpagination.sources.network.interceptor.FlickrInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import java.time.Duration
 
 object RetrofitHelper {
-    private const val BASE_URL = "https://api.flickr.com/services/rest/"
+    private const val BASE_URL = "https://api.flickr.com/services/"
 
-    fun createRetrofit(flickrInterceptor: FlickrInterceptor): Retrofit {
+    fun createRetrofit(flickrInterceptor: FlickrInterceptor, moshi: Moshi): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(createOkHttpClient(flickrInterceptor = flickrInterceptor))
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
 

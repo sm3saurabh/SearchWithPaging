@@ -1,9 +1,7 @@
 package dev.saurabhmishra.searchwithpagination.ui.home.searchlist
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -13,7 +11,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -72,10 +72,20 @@ private fun ImageList(
     ) {
         items(photosPagingItems) { photo ->
             photo?.let {
+                // A height is compulsory to be provided, without this, rememberImagePainter
+                // does not work.
+                // For reference -> https://coil-kt.github.io/coil/compose/
                 Image(
-                    painter = rememberImagePainter(photo.getPhotoUrl()),
-                    contentDescription = photo.title
+                    painter = rememberImagePainter(
+                        data = photo.getPhotoUrl()
+                    ),
+                    contentDescription = photo.title,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
                 )
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }

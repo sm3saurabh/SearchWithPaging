@@ -1,6 +1,7 @@
 package dev.saurabhmishra.searchwithpagination.mediator
 
 
+import android.provider.MediaStore
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
@@ -9,7 +10,9 @@ import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import dev.saurabhmishra.searchwithpagination.sources.network.helper.SafeResult
 import dev.saurabhmishra.searchwithpagination.utils.AppConstants
+import dev.saurabhmishra.searchwithpagination.utils.Logger
 import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
+import java.lang.IllegalStateException
 
 
 @OptIn(ExperimentalPagingApi::class)
@@ -44,6 +47,10 @@ class SearchRemoteMediator(
     private suspend fun loadAndSavePhotos(pageNumber: Int): MediatorResult {
         val currentQuery = SearchQueryPublisher.getCurrentQuery()
 
+        if (currentQuery.isBlank()) {
+            return MediatorResult.Error(IllegalStateException())
+        }
+
         return when (val photosResult = searchRepo.loadAndSavePhotos(currentQuery, pageNumber)) {
             is SafeResult.Success -> {
                 val isReloadSuccess = photosResult.data.success
@@ -57,6 +64,7 @@ class SearchRemoteMediator(
 
             }
             is SafeResult.Failure -> {
+                Logger.error("Exception in adding search results", photosResult.exception)
                 MediatorResult.Error(photosResult.exception)
             }
         }

@@ -1,6 +1,7 @@
 package dev.saurabhmishra.searchwithpagination.injection
 
 import androidx.room.Room
+import com.squareup.moshi.Moshi
 import dev.saurabhmishra.searchwithpagination.mediator.SearchRemoteMediator
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepo
 import dev.saurabhmishra.searchwithpagination.repo.SearchRepoImpl
@@ -36,7 +37,7 @@ val networkModule = module {
         FlickrInterceptor()
     }
 
-    single { RetrofitHelper.createRetrofit(get()) }
+    single { RetrofitHelper.createRetrofit(get(), get()) }
 
     single {
         val retrofit = get<Retrofit>()
@@ -45,6 +46,7 @@ val networkModule = module {
 
     single { SearchRemoteMediator(get()) } bind SearchRemoteMediator::class
 
+    single { Moshi.Builder().build() } bind Moshi::class
 }
 
 val databaseModule = module {
