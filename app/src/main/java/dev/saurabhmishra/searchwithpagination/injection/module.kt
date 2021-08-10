@@ -14,7 +14,7 @@ import dev.saurabhmishra.searchwithpagination.sources.network.SearchNetworkSourc
 import dev.saurabhmishra.searchwithpagination.sources.network.api.Api
 import dev.saurabhmishra.searchwithpagination.sources.network.helper.RetrofitHelper
 import dev.saurabhmishra.searchwithpagination.sources.network.interceptor.FlickrInterceptor
-import dev.saurabhmishra.searchwithpagination.ui.home.HomeScreenViewModel
+import dev.saurabhmishra.searchwithpagination.ui.home.searchlist.SearchListViewModel
 import dev.saurabhmishra.searchwithpagination.utils.CoroutineContextProvider
 import dev.saurabhmishra.searchwithpagination.utils.DefaultCoroutineContextProvider
 import org.koin.android.ext.koin.androidContext
@@ -28,7 +28,7 @@ val coreModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { HomeScreenViewModel(get(), get()) }
+    viewModel { SearchListViewModel(get(), get()) }
 }
 
 val networkModule = module {

@@ -20,25 +20,17 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       SearchWithPaginationTheme {
-        MainNavigation()
+        HomeScreen()
       }
     }
   }
 }
 
 
-@Composable
-fun MainNavigation() {
-  val navController = rememberNavController()
-  NavHost(navController = navController, startDestination = AppConstants.Routes.Home) {
-    composable(AppConstants.Routes.Home) { HomeScreen() }
-  }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
   SearchWithPaginationTheme {
-    MainNavigation()
+    HomeScreen()
   }
 }

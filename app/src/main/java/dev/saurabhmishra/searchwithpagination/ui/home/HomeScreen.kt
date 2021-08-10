@@ -1,98 +1,89 @@
 package dev.saurabhmishra.searchwithpagination.ui.home
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
-import coil.compose.rememberImagePainter
-import dev.saurabhmishra.searchwithpagination.mappers.getPhotoUrl
-import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import dev.saurabhmishra.searchwithpagination.routes.Route
+import dev.saurabhmishra.searchwithpagination.ui.home.favourite.FavouriteScreen
+import dev.saurabhmishra.searchwithpagination.ui.home.searchlist.SearchListScreen
 import dev.saurabhmishra.searchwithpagination.ui.theme.SearchWithPaginationTheme
-import dev.saurabhmishra.searchwithpagination.utils.SearchQueryPublisher
-import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun HomeScreen() {
-    val viewModel = getViewModel<HomeScreenViewModel>()
-    val currentSearchQuery by SearchQueryPublisher.searchQuery.collectAsState()
+    val bottomNavigationItems = listOf(
+        Route.Search,
+        Route.Favourite
+    )
 
-    val viewState by viewModel.viewState.collectAsState()
-    val photosPagingItems = viewModel.photosResponseFlow.collectAsLazyPagingItems()
+    val navController = rememberNavController()
 
-    HomeScreenContent(currentSearchQuery, viewState, photosPagingItems) { searchQuery ->
-        viewModel.onEvent(HomeScreenEvent.SearchQuery(searchQuery))
-    }
-}
-
-
-@Composable
-private fun HomeScreenContent(
-    textToShow: String,
-    viewState: HomeScreenViewState,
-    photosPagingItems: LazyPagingItems<PhotoEntity>,
-    inputChanged: (String) -> Unit
-) {
     Scaffold(
-        bottomBar = { HomeBottomNavigation() },
+        bottomBar = { HomeBottomNavigation(bottomNavigationItems, navController) },
         content = {
-            SearchBar(textToShow = textToShow, inputChanged = inputChanged)
-            ImageList(photosPagingItems, viewState)
+            NavigableContent(navController)
         }
     )
 }
 
+
 @Composable
-private fun HomeBottomNavigation() {
+private fun HomeBottomNavigation(
+    bottomNavigationItems: List<Route>,
+    navController: NavHostController
+) {
     BottomNavigation {
+        val currentEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = currentEntry?.destination
+        bottomNavigationItems.forEach { bottomNavigationItem ->
+            BottomNavigationItem(
+                selected = currentDestination?.hierarchy?.any { it.route == bottomNavigationItem.name } == true,
+                onClick = {
+                    navController.navigate(bottomNavigationItem.name) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
 
-    }
-}
+                        launchSingleTop = true
 
-
-@Composable
-private fun SearchBar(
-    textToShow: String,
-    inputChanged: (String) -> Unit
-) {
-    OutlinedTextField(
-        value = textToShow,
-        label = {
-            Text(text = "Search input")
-        },
-        onValueChange = inputChanged,
-        textStyle = MaterialTheme.typography.body1,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
-}
-
-@Composable
-private fun ImageList(
-    photosPagingItems: LazyPagingItems<PhotoEntity>,
-    viewState: HomeScreenViewState
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        items(photosPagingItems) { photo ->
-            photo?.let {
-                Image(
-                    painter = rememberImagePainter(photo.getPhotoUrl()),
-                    contentDescription = photo.title
-                )
-            }
+                        restoreState = true
+                    }
+                },
+                icon = {
+                    Icon(bottomNavigationItem.icon, contentDescription = bottomNavigationItem.name)
+                },
+                label = {
+                    Text(text = bottomNavigationItem.name)
+                },
+                alwaysShowLabel = false
+            )
         }
     }
+}
 
-    if (viewState is HomeScreenViewState.NewSearchQuery) {
-        photosPagingItems.refresh()
+@Composable
+private fun NavigableContent(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = Route.Search.name) {
+        composable(Route.Search.name) { SearchListScreen() }
+        composable(Route.Favourite.name) { FavouriteScreen() }
     }
 }
+
+@Composable
+@Preview
+fun HomeScreenPreview() {
+    SearchWithPaginationTheme {
+        HomeScreen()
+    }
+}
+
+
+
+
