@@ -28,13 +28,19 @@ fun HomeScreen() {
 
 @Composable
 private fun HomeScreenContent(textToShow: String, inputChanged: (String) -> Unit) {
-  Surface {
-    Column {
-      SearchBar(textToShow = textToShow, inputChanged = inputChanged)
-      ImageList()
-    }
+  Scaffold(
+    bottomBar = { HomeBottomNavigation() }
+  )
+}
+
+@Composable
+private fun HomeBottomNavigation() {
+  BottomNavigation {
+
   }
 }
+
+
 
 
 @Composable

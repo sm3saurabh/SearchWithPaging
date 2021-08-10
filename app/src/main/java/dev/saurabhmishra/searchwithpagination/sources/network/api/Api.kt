@@ -8,6 +8,7 @@ interface Api {
 
     @GET
     suspend fun searchPhotosWithTag(
-        @Query("")
+        @Query("tags") searchQuery: String,
+        @Query("page") page: Int
     ): PhotosSearchResponse
 }
