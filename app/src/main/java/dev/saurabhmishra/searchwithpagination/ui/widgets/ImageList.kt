@@ -1,5 +1,6 @@
 package dev.saurabhmishra.searchwithpagination.ui.widgets
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -24,6 +26,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.rememberImagePainter
 import coil.transform.RoundedCornersTransformation
+import dev.saurabhmishra.searchwithpagination.R
 import dev.saurabhmishra.searchwithpagination.mappers.getPhotoUrl
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import dev.saurabhmishra.searchwithpagination.ui.theme.SearchWithPaginationTheme
@@ -110,16 +113,17 @@ private fun PhotoWithLikeButton(photo: PhotoEntity, onLikeIconClick: (PhotoEntit
                 .align(Alignment.TopEnd)
                 .padding(top = 8.dp, end = 8.dp)
         ) {
-            Icon(getLikeIcon(photo), contentDescription = "Like button")
+            Image(painter = painterResource(id = getLikeIconId(photo = photo)), contentDescription = "Like button")
         }
     }
 }
 
-private fun getLikeIcon(photo: PhotoEntity): ImageVector {
+@DrawableRes
+private fun getLikeIconId(photo: PhotoEntity): Int {
     return if (photo.isFavorite) {
-        Icons.Filled.Favorite
+        R.drawable.ic_baseline_favorite_24
     } else {
-        Icons.Filled.ThumbUp
+        R.drawable.ic_baseline_favorite_border_24
     }
 }
 

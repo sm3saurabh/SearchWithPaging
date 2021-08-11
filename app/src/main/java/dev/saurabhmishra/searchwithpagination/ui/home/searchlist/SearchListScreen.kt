@@ -1,5 +1,7 @@
 package dev.saurabhmishra.searchwithpagination.ui.home.searchlist
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +17,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.PagingData
@@ -46,15 +50,30 @@ fun SearchListScreen() {
         photosPagingItems.refresh()
     }
 
+    val context = LocalContext.current
+
     Column(modifier = Modifier.padding(12.dp)) {
         SearchBar(textToShow = currentSearchQuery, inputChanged = { query ->
             viewModel.onEvent(SearchListScreenEvent.SearchQuery(query))
         })
         Spacer(modifier = Modifier.height(12.dp))
         ImageList(photosPagingItems = photosPagingItems, onLikeIconClick = { photo ->
+            showImageLikeClickToast(context, photo)
             viewModel.onEvent(SearchListScreenEvent.ToggleFavourite(photo))
         })
     }
+}
+
+// Just a quick hack, this method is called before room is updated, so we will show the toast
+// message with the reverse condition
+private fun showImageLikeClickToast(context: Context, photo: PhotoEntity) {
+    val message = if (!photo.isFavorite) {
+        "Photo is now a favourite, find it in the Favourite tab"
+    } else {
+        "Photo removed from favourites"
+    }
+
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
 }
 
 @Composable
