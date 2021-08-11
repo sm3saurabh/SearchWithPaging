@@ -28,6 +28,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.rememberImagePainter
 import coil.transform.RoundedCornersTransformation
+import dev.saurabhmishra.searchwithpagination.R
 import dev.saurabhmishra.searchwithpagination.mappers.getPhotoUrl
 import dev.saurabhmishra.searchwithpagination.sources.local.entities.PhotoEntity
 import dev.saurabhmishra.searchwithpagination.ui.theme.SearchWithPaginationTheme
@@ -84,7 +85,7 @@ private fun SearchBar(
     OutlinedTextField(
         value = textToShow,
         label = {
-            Text(text = "Search input")
+            Text(text = stringResource(id = R.string.search_bar_hint))
         },
         onValueChange = inputChanged,
         textStyle = MaterialTheme.typography.body1,
