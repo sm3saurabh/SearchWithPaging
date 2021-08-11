@@ -3,6 +3,7 @@ package dev.saurabhmishra.searchwithpagination.ui.widgets
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
@@ -16,6 +17,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -33,16 +35,51 @@ fun ImageList(
     photosPagingItems: LazyPagingItems<PhotoEntity>,
     onLikeIconClick: (PhotoEntity) -> Unit
 ) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        items(photosPagingItems) { photo ->
-            photo?.let {
-                PhotoWithLikeButton(photo, onLikeIconClick)
-                Spacer(modifier = Modifier.height(12.dp))
+
+    val loadState = photosPagingItems.loadState
+    if (loadState.refresh is LoadState.Loading) {
+        ScreenWideProgress()
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            items(photosPagingItems) { photo ->
+                photo?.let {
+                    PhotoWithLikeButton(photo, onLikeIconClick)
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
+
+            if (loadState.append is LoadState.Loading) {
+                item {
+                    ProgressItem()
+                }
             }
         }
+    }
+}
+
+@Composable
+private fun ScreenWideProgress() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
+@Composable
+private fun ProgressItem() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
     }
 }
 
@@ -69,7 +106,8 @@ private fun PhotoWithLikeButton(photo: PhotoEntity, onLikeIconClick: (PhotoEntit
 
         IconButton(
             onClick = { onLikeIconClick.invoke(photo) },
-            modifier = Modifier.align(Alignment.TopEnd)
+            modifier = Modifier
+                .align(Alignment.TopEnd)
                 .padding(top = 8.dp, end = 8.dp)
         ) {
             Icon(getLikeIcon(photo), contentDescription = "Like button")
